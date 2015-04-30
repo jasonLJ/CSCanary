@@ -1,0 +1,6 @@
+c:\users\jason\documents\visual studio 2015\Projects\CSCanary\CSCanary\bin\Debug\CSCanary.exe.config
+c:\users\jason\documents\visual studio 2015\Projects\CSCanary\CSCanary\bin\Debug\CSCanary.exe
+c:\users\jason\documents\visual studio 2015\Projects\CSCanary\CSCanary\bin\Debug\CSCanary.pdb
+c:\users\jason\documents\visual studio 2015\Projects\CSCanary\CSCanary\obj\Debug\CSCanary.csprojResolveAssemblyReference.cache
+c:\users\jason\documents\visual studio 2015\Projects\CSCanary\CSCanary\obj\Debug\CSCanary.exe
+c:\users\jason\documents\visual studio 2015\Projects\CSCanary\CSCanary\obj\Debug\CSCanary.pdb
