@@ -150,8 +150,11 @@ namespace CSCanary
         // Print the status of Http check success
         static void PrintHttpStatus(bool canHttpInternal, bool canHttpExternal)
         {
+            // Create message
             string time = GetCurrentTime();
             string message = "" + time + " - [HTTP] Internal: " + GetPassedText(canHttpInternal) + " | External: " + GetPassedText(canHttpExternal);
+
+            // Write and log the message
             Console.WriteLine(message);
             LogMessage(message);
         }
@@ -159,8 +162,11 @@ namespace CSCanary
         // Prints the status of ping check success
         static void PrintPingStatus(bool canPingInternal, bool canPingExternal)
         {
+            // Create message
             string time = GetCurrentTime();
             string message = "" + time + " - [PING] Internal: " + GetPassedText(canPingInternal) + " | External: " + GetPassedText(canPingExternal);
+
+            // Write and log the message
             Console.WriteLine(message);
             LogMessage(message);
         }
@@ -168,6 +174,7 @@ namespace CSCanary
         // Logs a message to the log
         static void LogMessage(string message)
         {
+            // Create a writer, append message, close.
             StreamWriter writer = File.AppendText(LOG_PATH);
             writer.WriteLine(message);
             writer.Close();
@@ -188,8 +195,8 @@ namespace CSCanary
 
             try
             {
-                request = (HttpWebRequest)WebRequest.Create(url);
-                response = (HttpWebResponse)request.GetResponse();
+                request = (HttpWebRequest) WebRequest.Create(url);
+                response = (HttpWebResponse) request.GetResponse();
             }
             catch (WebException)
             {
@@ -209,7 +216,7 @@ namespace CSCanary
             Ping ping = new Ping();
             PingReply reply = ping.Send(ip);
 
-            return (reply.Status == IPStatus.Success);
+            return reply.Status == IPStatus.Success;
         }
 
         // Replaces 'true' and 'false' with 'passed' and 'failed'
