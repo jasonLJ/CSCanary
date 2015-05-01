@@ -46,7 +46,7 @@ namespace CSCanary
             pingTimer.Elapsed += new ElapsedEventHandler(CheckPing);
             pingTimer.Interval = pingCheckIntervalMillis;
             pingTimer.Enabled = true;
-            .
+            
             // Create a timer for Http checking
             Timer httpTimer = new Timer();
             httpTimer.Elapsed += new ElapsedEventHandler(CheckHttp);
@@ -81,10 +81,7 @@ namespace CSCanary
             // Attempt to create an xmlReader on the file and pull settings
             try
             {
-                XmlReader xmlReader = XmlReader.Create(streamReader);
-
-                // Pull our settings
-                using (xmlReader)
+                using (XmlReader xmlReader = XmlReader.Create(streamReader))
                 {
                     xmlReader.ReadToFollowing("internalURL");
                     _internalURL = xmlReader.ReadElementContentAsString();
