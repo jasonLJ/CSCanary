@@ -37,7 +37,7 @@ namespace CSCanary
             Console.WriteLine("Monitoring {0}, {1}, {2}, {3}\nEvery {4} (PING) and {5} (HTTP) seconds.", _internalURL, _externalURL, _internalIP, _externalIP, _pingCheckIntervalSeconds, _httpCheckIntervalSeconds);
 
             // Convert the seconds we got from the config to millis
-            int millisPerSecond = 1000;
+            const int millisPerSecond = 1000;
             int pingCheckIntervalMillis = _pingCheckIntervalSeconds * millisPerSecond;
             int httpCheckIntervalMillis = _httpCheckIntervalSeconds * millisPerSecond;
 
