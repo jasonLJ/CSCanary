@@ -193,6 +193,7 @@ namespace CSCanary
             try
             {
                 request = (HttpWebRequest) WebRequest.Create(url);
+                request.Credentials = CredentialCache.DefaultCredentials;
                 response = (HttpWebResponse) request.GetResponse();
             }
             catch (WebException)
