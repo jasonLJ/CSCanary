@@ -29,7 +29,7 @@ namespace CSCanary
 
         static void Main(string[] args)
         {
-            // Load elements from the config fire
+            // Load elements from the config file
             LoadConfig();
 
             // Let the user know what's going on
@@ -46,7 +46,7 @@ namespace CSCanary
             pingTimer.Elapsed += new ElapsedEventHandler(CheckPing);
             pingTimer.Interval = pingCheckIntervalMillis;
             pingTimer.Enabled = true;
-
+            .
             // Create a timer for Http checking
             Timer httpTimer = new Timer();
             httpTimer.Elapsed += new ElapsedEventHandler(CheckHttp);
