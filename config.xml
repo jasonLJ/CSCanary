@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <internalURL>http://www.somesadsawhere.com</internalURL>
+    <externalURL>http://www.google.com</externalURL>
+    
+    <internalIP>192.168.20.1</internalIP>
+    <externalIP>8.8.8.8</externalIP>
+    
+    <!-- In Seconds -->
+    <pingCheckInterval>5</pingCheckInterval>
+    <httpCheckInterval>300</httpCheckInterval>
+    
+    <smtpHost>smtp.somewhere.com</smtpHost>
+    <smtpPort>25</smtpPort>
+    <smtpUsername></smtpUsername>
+    <smtpPassword></smtpPassword>
+    <smtpDestination>you@somewhere.com</smtpDestination>
+    <smtpSender>alerts@somewhere.com</smtpSender>
+    <smtpUseSSL>false</smtpUseSSL>
+    
+    <!-- In Minutes -->
+    <emailMinimumInterval>15</emailMinimumInterval>
+</config>

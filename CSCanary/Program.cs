@@ -8,6 +8,7 @@ using System.Net.NetworkInformation;
 using System.IO;
 using System.Xml;
 using System.Timers;
+using System.Net.Mail;
 
 namespace CSCanary
 {
@@ -16,6 +17,7 @@ namespace CSCanary
         // Configuration
         private const string CONFIG_PATH = "config.xml";
         private const string LOG_PATH = "log.txt";
+        private const int EMAIL_TIMEOUT = 100000;
 
         // Private Variables
         private static string _internalIP;
@@ -26,6 +28,17 @@ namespace CSCanary
 
         private static int _httpCheckIntervalSeconds;
         private static int _pingCheckIntervalSeconds;
+
+        private static string _smtpHost;
+        private static int _smtpPort;
+        private static string _smtpUsername;
+        private static string _smtpPassword;
+        private static string _smtpDestinationAddress;
+        private static string _smtpSenderAddress;
+        private static bool _smtpUseSSL;
+
+        private static int _emailSendMinimumInterval;
+        private static int _lastEmail;
 
         static void Main(string[] args)
         {
@@ -53,9 +66,7 @@ namespace CSCanary
             httpTimer.Interval = httpCheckIntervalMillis;
             httpTimer.Enabled = true;
 
-            // Run the first two checks on startup
-            CheckPing(null, null);
-            CheckHttp(null, null);
+            _lastEmail = -1; // Will get set on first email
 
             // Run forever
             while (true) ;
@@ -83,23 +94,53 @@ namespace CSCanary
             {
                 using (XmlReader xmlReader = XmlReader.Create(streamReader))
                 {
+                    // URLs
                     xmlReader.ReadToFollowing("internalURL");
                     _internalURL = xmlReader.ReadElementContentAsString();
 
                     xmlReader.ReadToFollowing("externalURL");
                     _externalURL = xmlReader.ReadElementContentAsString();
 
+                    // IPs
                     xmlReader.ReadToFollowing("internalIP");
                     _internalIP = xmlReader.ReadElementContentAsString();
 
                     xmlReader.ReadToFollowing("externalIP");
                     _externalIP = xmlReader.ReadElementContentAsString();
 
+                    // Intervals
                     xmlReader.ReadToFollowing("pingCheckInterval");
                     _pingCheckIntervalSeconds = xmlReader.ReadElementContentAsInt();
 
                     xmlReader.ReadToFollowing("httpCheckInterval");
                     _httpCheckIntervalSeconds = xmlReader.ReadElementContentAsInt();
+
+                    // SMTP Connection Info
+                    xmlReader.ReadToFollowing("smtpHost");
+                    _smtpHost = xmlReader.ReadElementContentAsString();
+
+                    xmlReader.ReadToFollowing("smtpPort");
+                    _smtpPort = xmlReader.ReadElementContentAsInt();
+
+                    xmlReader.ReadToFollowing("smtpUsername");
+                    _smtpUsername = xmlReader.ReadElementContentAsString();
+
+                    xmlReader.ReadToFollowing("smtpPassword");
+                    _smtpPassword = xmlReader.ReadElementContentAsString();
+
+                    // SMTP Address Info
+                    xmlReader.ReadToFollowing("smtpDestination");
+                    _smtpDestinationAddress = xmlReader.ReadElementContentAsString();
+
+                    xmlReader.ReadToFollowing("smtpSender");
+                    _smtpSenderAddress = xmlReader.ReadElementContentAsString();
+
+                    // SMTP Miscellaneous Info
+                    xmlReader.ReadToFollowing("smtpUseSSL");
+                    _smtpUseSSL = xmlReader.ReadElementContentAsBoolean();
+
+                    xmlReader.ReadToFollowing("emailMinimumInterval");
+                    _emailSendMinimumInterval = xmlReader.ReadElementContentAsInt();
                 }
             }
             catch (XmlException) // Some error in the XML
@@ -154,6 +195,18 @@ namespace CSCanary
             // Write and log the message
             Console.WriteLine(message);
             LogMessage(message);
+
+            // Figure out if we need to email this
+            int currentTime = Environment.TickCount;
+            const int millisPerSecond = 1000;
+            const int secondsPerMinute = 60;
+            int sendIntervalMillis = _emailSendMinimumInterval * millisPerSecond * secondsPerMinute;
+
+            if (currentTime - _lastEmail > sendIntervalMillis || _lastEmail == -1) // Or there hasn't been an email yet
+            {
+                SendEMail("CSCanary [HTTP] - Failure", message);
+                _lastEmail = Environment.TickCount;
+            }
         }
 
         // Prints the status of ping check success
@@ -166,6 +219,20 @@ namespace CSCanary
             // Write and log the message
             Console.WriteLine(message);
             LogMessage(message);
+            
+            // TODO: Remove code redundancy
+            // Figure out if we need to email this
+            int currentTime = Environment.TickCount;
+            const int millisPerSecond = 1000;
+            const int secondsPerMinute = 60;
+            
+            int sendIntervalMillis = _emailSendMinimumInterval * millisPerSecond * secondsPerMinute;
+            
+            if (currentTime - _lastEmail > sendIntervalMillis || _lastEmail == -1) // Or there hasn't been an email yet
+            {
+                SendEMail("CSCanary [PING] - Failure", message);
+                _lastEmail = Environment.TickCount;
+            }
         }
 
         // Logs a message to the log
@@ -175,6 +242,39 @@ namespace CSCanary
             StreamWriter writer = File.AppendText(LOG_PATH);
             writer.WriteLine(message);
             writer.Close();
+        }
+
+        // Emails a message
+        static void SendEMail(string subject, string body)
+        {
+            SmtpClient client = new SmtpClient(_smtpHost, _smtpPort);
+            client.EnableSsl = _smtpUseSSL;
+            client.Timeout = EMAIL_TIMEOUT;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+
+            // Authentication
+            if(_smtpUsername == "" || _smtpPassword == "") // Incomplete authentication information provided
+            {
+                // Use default credentials
+                client.UseDefaultCredentials = true;
+            }
+            else
+            {
+                // Authenticate
+                client.UseDefaultCredentials = false;
+                client.Credentials = new NetworkCredential(_smtpUsername, _smtpPassword);
+            }
+
+            // Create addresses and the email
+            MailAddress sender = new MailAddress(_smtpSenderAddress);
+            MailAddress destination = new MailAddress(_smtpDestinationAddress);
+            MailMessage email = new MailMessage(sender, destination);
+
+            // Provide email information
+            email.Subject = subject;
+            email.Body = body;
+
+            client.Send(email);
         }
 
         // Returns a timestamp of right now
