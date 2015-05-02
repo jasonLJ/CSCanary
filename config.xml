@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
-    <internalURL>http://www.somesadsawhere.com</internalURL>
+    <internalURL>http://www.someWhere.com</internalURL>
     <externalURL>http://www.google.com</externalURL>
     
     <internalIP>192.168.20.1</internalIP>
     <externalIP>8.8.8.8</externalIP>
     
     <!-- In Seconds -->
-    <pingCheckInterval>5</pingCheckInterval>
+    <pingCheckInterval>30</pingCheckInterval>
     <httpCheckInterval>300</httpCheckInterval>
     
     <smtpHost>smtp.somewhere.com</smtpHost>
