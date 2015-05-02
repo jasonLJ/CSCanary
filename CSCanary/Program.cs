@@ -49,6 +49,9 @@ namespace CSCanary
             Console.WriteLine("Code Sign Canary - Cheep Cheep.");
             Console.WriteLine("Monitoring {0}, {1}, {2}, {3}\nEvery {4} (PING) and {5} (HTTP) seconds.", _internalURL, _externalURL, _internalIP, _externalIP, _pingCheckIntervalSeconds, _httpCheckIntervalSeconds);
 
+            // Log program start
+            LogMessage("-- Monitoring Start " + GetCurrentTime() + " --");
+
             // Convert the seconds we got from the config to millis
             const int millisPerSecond = 1000;
             int pingCheckIntervalMillis = _pingCheckIntervalSeconds * millisPerSecond;
